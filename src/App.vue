@@ -1,9 +1,10 @@
 <template>
-    <Login />
+    <RouterView />
+     <!-- <Layout /> -->
 </template>
 
 <script lang='ts' setup>
-import Login from "./view/Login.vue"
+import Layout from './layouts/layout.vue'
 </script>
 
 <style scoped>
