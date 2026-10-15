@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "axios": "^1.20.0",
     "element-plus": "^2.14.7",
     "pinia": "^4.0.3",
     "router": "^2.2.0",
@@ -20,8 +21,10 @@
     "@types/node": "^24.13.3",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/tsconfig": "^0.9.1",
+    "mockjs": "^1.1.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
+    "vite-plugin-mock": "^3.0.2",
     "vue-tsc": "^3.3.11"
   }
 }

@@ -27,7 +27,6 @@
                             <span>权限控制</span>
                         </div>  
                     </div>
-
             </div>
             <div class="content-r">
                 <div class="card">
@@ -37,22 +36,20 @@
                         </el-icon>
                     </div>
                     <h3>电商平台后台管理系统</h3>
-                    <el-form>
-                        <el-form-item>
+                    <el-form ref="formRef" :model="form" :rules="rules" @keyup.enter="handleLogin">
+                        <el-form-item prop="username">
                             <el-input
                                 placeholder="请输入用户名"
-                                v-model="username"
+                                v-model="form.username"
                                 :prefix-icon="User"
                                 class="login-input"
-                                maxlength="11"
-                                show-word-limit
                                 size='large'
                             />
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item prop="password">
                             <el-input
                                 placeholder="请输入密码"
-                                v-model="password"
+                                v-model="form.password"
                                 type='password'
                                 show-password
                                 :prefix-icon="Lock"
@@ -60,7 +57,6 @@
                                 size='large'
                             />
                         </el-form-item>
-
                         <div class="select">
                             <el-checkbox v-model="remember">
                                 记住账号
@@ -68,7 +64,7 @@
                             <span class="forget-pwd">忘记密码?</span>
                         </div>
 
-                        <el-button type="primary" class="login-btn" @click="go">
+                        <el-button type="primary" class="login-btn" @click="handleLogin">
                             登 录
                         </el-button>
                     </el-form>
@@ -80,17 +76,45 @@
 
 <script lang='ts' setup>
 import illustration from "../assets/illustration.svg"
-import {Goods, List, DataLine, Key,Shop,User, Lock, View, Hide} from "@element-plus/icons-vue"
-import {ref} from "vue"
+import {Goods, List, DataLine, Key,Shop,User, Lock} from "@element-plus/icons-vue"
+import { ref, reactive } from "vue"
+import { ElMessage } from "element-plus"
+import type { FormInstance } from "element-plus"
+
 import { useRouter } from "vue-router"
+import { useLoginStore } from "../stores/login"
 
 const router = useRouter()
-
-const password = ref('')
-const username = ref('')
+const loginStore = useLoginStore()
 const remember = ref(false)
-const go = () => {
-    router.push('/layout')
+const formRef = ref<FormInstance>()
+
+const form = reactive({
+    username: '',
+    password: ''
+})
+//****** 表单校验 *****重点*/
+const rules = {
+    username: [
+        { required: true, message: '请输入用户名', trigger: 'blur' },
+        { min: 3, max: 20, message: '用户名长度为 3-20 个字符', trigger: 'blur' }
+    ],
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, max: 20, message: '密码长度为 6-20 个字符', trigger: 'blur' }
+    ]
+}
+
+const handleLogin = async () => {
+    if (!formRef.value) return
+    try {
+        await formRef.value.validate()
+        const res = await loginStore.login({ username: form.username, password: form.password })
+        ElMessage.success('登录成功')
+        router.push('/layout/dashboard')
+    } catch (err) {
+        // 校验失败不提示，接口失败拦截器已处理
+    }
 }
 </script>
 
@@ -158,6 +182,14 @@ h2{
   align-items: center;
   justify-content: center;
 }
+
+
+
+:deep(.el-form-item__error) { color : #ef4444 ; /* 改颜色 */ font-size : 12px ; padding-top : 2px ;
+}
+
+
+
 .card{     /*这是重点*/
     width: 100%;
     max-width: 420px;
