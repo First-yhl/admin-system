@@ -78,6 +78,10 @@
 import illustration from "../assets/illustration.svg"
 import {Goods, List, DataLine, Key,Shop,User, Lock} from "@element-plus/icons-vue"
 import { ref, reactive } from "vue"
+import { useRoute } from "vue-router"
+
+const route = useRoute()
+
 import { ElMessage } from "element-plus"
 import type { FormInstance } from "element-plus"
 
@@ -110,8 +114,9 @@ const handleLogin = async () => {
     try {
         await formRef.value.validate()
         const res = await loginStore.login({ username: form.username, password: form.password })
+        const redirect = route.query.redirect as string
         ElMessage.success('登录成功')
-        router.push('/layout/dashboard')
+        router.push(redirect || '/layout/dashboard')
     } catch (err) {
         // 校验失败不提示，接口失败拦截器已处理
     }

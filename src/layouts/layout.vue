@@ -4,6 +4,9 @@
         <div class="content">
             <Narbar />
             <div class="main">
+                <div class="breadcrub">
+                    <Breadcrub />
+                </div>
                 <RouterView />
             </div>
         </div>
@@ -13,6 +16,7 @@
 <script lang='ts' setup>
 import Sidebar from '../components/sidebar.vue'
 import Narbar from '../components/narbar.vue'
+import Breadcrub from '../components/breadcrub.vue'
 </script>
 
 <style scoped>
@@ -32,5 +36,8 @@ import Narbar from '../components/narbar.vue'
     padding: 20px;
     overflow-y: auto;
     background-color: #f5f5f5;
+}
+.breadcrub {
+    margin-bottom: 20px;
 }
 </style>

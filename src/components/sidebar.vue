@@ -11,7 +11,7 @@
         </div>
         <div class="menu">
              <RouterLink v-for="item in menu" :key="item.path" :to="item.path" class="menu-item"
-                             active-class="active"
+            active-class="active"
             >
             <svg class="menu-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path :d="iconPath(item.icon)" fill="currentColor"/>
@@ -26,15 +26,28 @@
 <script lang='ts' setup>
 import {ref} from 'vue'
 import { useAppStore } from '../stores/app'
+import { useLoginStore } from '../stores/login'
+
+const loginStore = useLoginStore()
 
 const appStore = useAppStore()
-
-const menu = [
+// 这块转换是重点 切记
+const menudata = [
     { icon: 'home', title: '首页', path: '/layout/dashboard' },
     { icon: 'users', title: '用户管理', path: '/layout/user' },
     { icon: 'box', title: '商品管理', path: '/layout/produces' },
-    { icon: 'order', title: '订单', path: '/layout/order' },
+    { icon: 'order', title: '订单管理', path: '/layout/order' },
 ]
+
+const getmenu = ()=>{
+    if(loginStore.role === 'admin'){
+        return menudata
+    }
+    else{
+        return menudata.slice(2,4)
+    }
+}
+const menu = ref(getmenu())
 const iconMap: Record<string, string> = {
     home: 'M12 3L2 12H5V20H9V14H15V20H19V12H22L12 3Z',
     users: 'M16 11C17.66 11 19 9.66 19 8C19 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 11 9.66 11 8C11 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.33 13 0 14.34 0 17V19H16V17C16 14.34 10.67 13 8 13ZM16 13C15.5 13 14.94 13.05 14.34 13.14C15.36 13.83 16 14.82 16 16V19H24V17C24 14.34 18.67 13 16 13Z',
@@ -195,7 +208,7 @@ const iconPath = (name:string) => iconMap[name] || ''
         visibility: hidden;
         transition: opacity 0.3s ease;
     }
-
+ 
     .mask.show {
         opacity: 1;
         visibility: visible;

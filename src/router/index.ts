@@ -10,29 +10,85 @@ export const router = createRouter({
         {
             path: '/layout',
             component: () => import('../layouts/layout.vue'),
+            meta:{
+                requiredAuth:true,
+                title:'首页',
+            },
             children: [
                 {
                     path: 'user',
-                    component: () => import('../view/user.vue')
+                    component: () => import('../view/user.vue'),
+                    meta:{
+                        requiredAuth:true,
+                        title:'用户管理',
+                    },
+                    children:[
+                        {
+                            path:'watchuser/:id',
+                            component:() => import('../view/watch/watchuser.vue'),
+                            meta:{
+                                requiredAuth:true,
+                                title:'查看用户',
+                            }
+                        }
+                    ]
                 },
                 {
                     path: 'order',
-                    component: () => import('../view/order.vue')
+                    component: () => import('../view/order.vue'),
+                    meta:{
+                        requiredAuth:true,
+                        title:'订单管理',
+                    }
                 },
                 {
                     path: 'produces',
-                    component: () => import('../view/produces.vue')
+                    component: () => import('../view/produces.vue'),
+                    meta:{
+                        requiredAuth:true,
+                        title:'商品管理',
+                    }
                 },
                 {
                     path: 'dashboard',
-                    component: () => import('../view/dashBoard.vue')
+                    component: () => import('../view/dashBoard.vue'),
+                    meta:{
+                        requiredAuth:true,
+                        title:'仪表盘',
+                    }
                 },
                 {
                     path: 'profile',
-                    component: () => import('../view/profile.vue')
+                    component: () => import('../view/profile.vue'),
+                    meta:{
+                        requiredAuth:true,
+                        title:'个人中心',
+                    }
                 },
             ]
         }
         
     ]
+})
+
+router.beforeEach((to,from,next)=>{
+    const token = localStorage.getItem('token')
+    const needAuth = to.matched.some(item => item.meta.requiredAuth)
+
+    if(needAuth){
+        if(!token){
+            next({path:'/',query:{redirect:to.fullPath}})
+        }
+        else{
+            next()
+        }
+    }
+    else{
+        if(token && to.path === '/'){
+            next({path:'/layout/dashboard'})
+        }
+        else{
+            next()
+        }
+    }
 })

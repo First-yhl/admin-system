@@ -27,7 +27,7 @@
                     </svg>
                     </RouterLink>
                 </div>
-                <span class="username">欢迎，admin</span>
+                <span class="username">欢迎，{{loginStore.name}}</span>
             </div>
         </div>
     </div>
@@ -35,6 +35,9 @@
 
 <script lang='ts' setup>
 import {useAppStore} from '../stores/app'
+import {useLoginStore} from '../stores/login'
+
+const loginStore = useLoginStore()
 const appStore = useAppStore()
 const toggleMenu = () => {
     if (window.innerWidth <= 767) {
@@ -45,6 +48,7 @@ const toggleMenu = () => {
         appStore.isCollapse = !appStore.isCollapse
     }
 }
+
 </script>
 
 <style scoped>

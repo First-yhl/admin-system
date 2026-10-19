@@ -10,7 +10,7 @@ export default[
     {
         url:'/api/login',
         method:'post',
-        response({body}){
+        response({body}:{body:{username:string,password:string}}){
             const {username,password} = body
             const result = admin.find(u=>u.username === username && u.password === password)
             if(!result){
