@@ -56,10 +56,14 @@
                     <el-icon><Plus /></el-icon>
                     新增用户
                 </el-button>
+                <el-button type='danger' @click="userStore.batchDelete">
+                    <el-icon><Delete /></el-icon>
+                    删除
+                </el-button>
             </div>
             <div class="user-list">
-                <el-table :data="pagedData" style="width: 100%">
-                    <el-table-column type="selection" width="55" />
+                <el-table :data="pagedData" style="width: 100%" @selection-change="userStore.select">
+                    <el-table-column type="selection" width="55"/>
                     <el-table-column prop="id" label="用户ID" width="80" />
                     <el-table-column prop="username" label="用户名" min-width="120" show-overflow-tooltip />
                     <el-table-column prop="phone" label="手机号" width="130" />
@@ -82,7 +86,7 @@
                     <el-table-column label="操作" width="200">
                     <template #default="currentRow">
                         <div class="action-btns">
-                            <el-button size="small" type="primary">编辑</el-button>
+                            <el-button size="small" type="primary" @click="userStore.mod(currentRow.row.id)">编辑</el-button>
                             <el-button size="small" type="info" @click="handleUserClick(currentRow.row)">详情</el-button>
                             <el-button type="danger" size="small" @click = "userStore.handleDelete(currentRow.row.id)">删除</el-button>
                         </div>
@@ -142,6 +146,49 @@
                         </div>
                     </template>
                 </el-dialog>
+
+                <el-dialog
+                    title="编辑用户"
+                    width="560px"
+                    draggable
+                    v-model="userStore.modpeople"
+                    class="user-dialog"
+                    @close="handleDialogClose"
+                >
+                    <el-form ref="formRef" :model="tempform" :rules="rules" label-width="80px" size="large">
+                        <el-form-item label="用户名" prop="username">
+                            <el-input placeholder="请输入用户名" :prefix-icon="User" v-model="tempform.username" />
+                        </el-form-item>
+                        <el-form-item label="外号" prop="nickname">
+                            <el-input placeholder="请输入外号" :prefix-icon="User" v-model="tempform.nickname" />
+                        </el-form-item>
+                        <el-form-item label="手机号" prop="phone">
+                            <el-input placeholder="请输入手机号" :prefix-icon="Phone" v-model="tempform.phone" />
+                        </el-form-item>
+                        <el-form-item label="邮箱" prop="email">
+                            <el-input placeholder="请输入邮箱" :prefix-icon="Message" v-model="tempform.email">
+                                <template #append>
+                                    <el-select v-model="emailDomain">
+                                        <el-option label="@qq.com" value="@qq.com" />
+                                        <el-option label="@gmail.com" value="@gmail.com" />
+                                    </el-select>
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="角色" prop="role">
+                            <el-select v-model="tempform.role" placeholder="请选择角色" class="w-full">
+                                <el-option label="普通用户" value="common" />
+                                <el-option label="VIP用户" value="vip" />
+                            </el-select>
+                        </el-form-item>
+                    </el-form>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="userStore.closeMod">取消修改</el-button>
+                            <el-button type="primary" @click="userStore.UpdateUser(userStore.onpeople!.id, tempform)">确认修改</el-button>
+                        </div>
+                    </template>
+                </el-dialog>
             </div>
         </div>
     </div>
@@ -149,13 +196,15 @@
 </template>
 
 <script lang='ts' setup>
-import { Search, Refresh,Plus,User, Phone, Message } from '@element-plus/icons-vue';
+import { Search, Refresh,Plus,User, Phone, Message,Delete } from '@element-plus/icons-vue';
 import {useUserStore} from '../stores/user'
 import {ref, onMounted, computed, reactive, watch} from 'vue'
 import type { FormInstance } from "element-plus"
 import {router} from '../router'
 import {useRoute} from 'vue-router'
+const userStore = useUserStore()
 const route = useRoute()
+
 const formRef = ref<FormInstance>()
 const emailDomain = ref("qq.com")
 const form = reactive({
@@ -165,14 +214,41 @@ const form = reactive({
     email: '',
     role: ''
 })
-const userStore = useUserStore()
+
+const tempform = reactive({
+    username:'',
+    nickname: '',
+    phone: '',
+    email: '',
+    role: ''
+})
+
+// 编辑时：store 的用户数据 → 复制到 form
+watch(() => userStore.modpeople, (editing) => {
+    if (editing && userStore.onpeople?.id) {
+        const u = userStore.onpeople
+        tempform.username = u.username
+        tempform.nickname = u.nickname
+        tempform.phone = u.phone
+        tempform.email = u.email.split('@')[0]
+        tempform.role = u.role
+    }
+})
+
+
 const keyword = ref("")
 const status = ref("all")
 const role = ref("all")
+
+
 const pageSize = ref(5)
 const currentPage = ref(1)
+
+
 const dialog = ref(false)
 
+
+const modForm = ref<FormInstance>()
 
 onMounted(()=>{
     userStore.fetchUsers()
@@ -252,16 +328,19 @@ const rules = {
     ]
 }
 
-const handleSubmit = () => {
-    formRef.value?.validate((valid) => {
-        if (valid) {
-            userStore.AddUser({
-                ...form,
-                email: form.email + emailDomain.value
-            })
-            dialog.value = false
-        }
-    })
+const handleSubmit = async () => {
+    try {
+        await formRef.value?.validate()
+        // 全部通过
+        userStore.AddUser({
+            ...form,
+            email: form.email + emailDomain.value
+        })
+        dialog.value = false
+    } catch {
+        // 有字段没通过，不用写任何代码
+        // EP 会自动在表单里显示红框和错误提示
+    }
 }
 
 const handleDialogClose = () => {

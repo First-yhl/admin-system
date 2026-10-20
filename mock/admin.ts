@@ -1,9 +1,9 @@
 import type { MockMethod } from 'vite-plugin-mock'
 
 const admin = [
-   { id: 1, username: 'admin', password: '123456', role: 'admin', name: '超级管理员' },
-   { id: 2, username: 'editor', password: '123456', role: 'editor', name: '运营人员' },
-   { id: 3, username: 'viewer', password: '123456', role: 'viewer', name: '数据查看员' },
+   { id: 1, username: 'admin', password: '123456', role: 'admin', name: '超级管理员', phone: '13800000001', email: 'admin@shop.com' },
+   { id: 2, username: 'editor', password: '123456', role: 'editor', name: '运营人员', phone: '13800000002', email: 'editor@shop.com' },
+   { id: 3, username: 'viewer', password: '123456', role: 'viewer', name: '数据查看员', phone: '13800000003', email: 'viewer@shop.com' },
 ]
 
 export default[
@@ -22,8 +22,11 @@ export default[
                 message:'OK',
                 data:{
                     token,
+                    username: result.username,
                     role:result.role,
                     name:result.name,
+                    phone:result.phone,
+                    email:result.email,
                     logintime:Date.now()
                 }
             }

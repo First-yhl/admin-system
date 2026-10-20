@@ -9,7 +9,7 @@ export default[
             return {
                 code:200,
                 message:'success',
-               data: Mock.mock<User[]>({
+               data: Mock.mock({
                     'list|15': [
                         {
                             'id|+1': 1,

@@ -66,7 +66,15 @@ export const router = createRouter({
                     }
                 },
             ]
-        }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            component: () => import('../view/404.vue'),
+            meta:{
+                requiredAuth:true,
+                title:'404',
+            }
+        },
         
     ]
 })
