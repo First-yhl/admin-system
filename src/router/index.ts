@@ -47,7 +47,17 @@ export const router = createRouter({
                     meta:{
                         requiredAuth:true,
                         title:'商品管理',
-                    }
+                    },
+                    children:[
+                        {
+                            path:'detail/:id',
+                            component:() => import('../view/watch/watchproduce.vue'),
+                            meta:{
+                                requiredAuth:true,
+                                title:'商品详情',
+                            }
+                        }
+                    ]
                 },
                 {
                     path: 'dashboard',
@@ -75,6 +85,7 @@ export const router = createRouter({
                 title:'404',
             }
         },
+
         
     ]
 })

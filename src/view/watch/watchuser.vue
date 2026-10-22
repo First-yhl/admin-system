@@ -85,6 +85,8 @@ const roleTagType = computed<'primary' | 'warning' | 'danger' | 'info'>(() => {
 })
 
 // 头像背景色（根据用户名生成固定颜色）
+
+//运用哈希
 const avatarColor = computed(() => {
     const colors = ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#909399', '#8e44ad', '#16a085']
     const name = user.value?.username || ''
